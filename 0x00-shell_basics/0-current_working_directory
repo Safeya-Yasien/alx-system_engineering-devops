@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 #!/bin/bash
 pwd
 C-x C-s
+=======
+#!/bin/bash
+pwd
+>>>>>>> 5b93219eacd0ae38e921f06e626fc1952e60841f
