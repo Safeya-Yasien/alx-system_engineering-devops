@@ -1,2 +1,4 @@
 #!/bin/bash
 pwd
+C-x C-s
+C-x C-c
