@@ -1,0 +1,1 @@
+find .PATH[D[D[D[D$[C[C[C[C-mindepth 1 -type d | wc -l
