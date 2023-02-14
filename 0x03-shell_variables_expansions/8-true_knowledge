@@ -1,2 +1,2 @@
 #!/bin/bash
-print($(([F[B[C[C[C[C[C[C[C[C[C[C[D128+$TRUEKNOWLEDGE))
+print($((128+%d))"$TRUEKNOWLEDGE"
