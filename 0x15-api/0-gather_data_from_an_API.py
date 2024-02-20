@@ -1,34 +1,36 @@
 #!/usr/bin/python3
+"""script for parsing web data from an api
 """
-Request from API; Return TODO list progress given employee ID
-"""
-import requests
-from sys import argv
-
-
-def display():
-    """return API data"""
-    users = requests.get("http://jsonplaceholder.typicode.com/users")
-    for u in users.json():
-        if u.get('id') == int(argv[1]):
-            EMPLOYEE_NAME = (u.get('name'))
-            break
-    TOTAL_NUM_OF_TASKS = 0
-    NUMBER_OF_DONE_TASKS = 0
-    TASK_TITLE = []
-    todos = requests.get("http://jsonplaceholder.typicode.com/todos")
-    for t in todos.json():
-        if t.get('userId') == int(argv[1]):
-            TOTAL_NUM_OF_TASKS += 1
-            if t.get('completed') is True:
-                    NUMBER_OF_DONE_TASKS += 1
-                    TASK_TITLE.append(t.get('title'))
-    print("Employee {} is done with tasks({}/{}):".format(EMPLOYEE_NAME,
-                                                          NUMBER_OF_DONE_TASKS,
-                                                          TOTAL_NUM_OF_TASKS))
-    for task in TASK_TITLE:
-        print("\t {}".format(task))
-
-
 if __name__ == "__main__":
-    display()
+    import json
+    import requests
+    import sys
+    base_url = 'https://jsonplaceholder.typicode.com/'
+    try:
+        employee_id = sys.argv[1]
+    except:
+        print('Usage: {} employee_id'.format(sys.argv[0]))
+        exit(1)
+
+    # grab the info about the user
+    url = base_url + 'users?id={}'.format(employee_id)
+    response = requests.get(url)
+    user = json.loads(response.text)
+    name = user[0].get('name')
+
+    # grab the info about the user's tasks
+    url = base_url + 'todos?userId={}'.format(employee_id)
+    response = requests.get(url)
+    objs = json.loads(response.text)
+    completed = 0
+    completed_tasks = []
+    for obj in objs:
+        if obj.get('completed'):
+            completed_tasks.append(obj)
+            completed += 1
+
+    # print the output about user's task completion
+    print("{} is done with tasks({}/{}):".format(name, completed, len(objs)))
+    # print the output title of completed tasks
+    for task in completed_tasks:
+        print("\t {}".format(task.get('title')))

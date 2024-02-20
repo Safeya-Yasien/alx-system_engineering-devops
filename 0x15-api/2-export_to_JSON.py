@@ -1,35 +1,36 @@
 #!/usr/bin/python3
+"""script for parsing web data from an api
 """
-Request from API; Return TODO list progress given employee ID
-Export this data to JSON
-"""
-from sys import argv
-import json
-import requests
-
-
-def to_json():
-    """return API data"""
-    users = requests.get("http://jsonplaceholder.typicode.com/users")
-    for u in users.json():
-        if u.get('id') == int(argv[1]):
-            USERNAME = (u.get('username'))
-            break
-    TASK_STATUS_TITLE = []
-    todos = requests.get("http://jsonplaceholder.typicode.com/todos")
-    for t in todos.json():
-        if t.get('userId') == int(argv[1]):
-            TASK_STATUS_TITLE.append((t.get('completed'), t.get('title')))
-
-    """export to json"""
-    t = []
-    for task in TASK_STATUS_TITLE:
-        t.append({"task": task[1], "completed": task[0], "username": USERNAME})
-    data = {str(argv[1]): t}
-    filename = "{}.json".format(argv[1])
-    with open(filename, "w") as f:
-        json.dump(data, f)
-
-
 if __name__ == "__main__":
-    to_json()
+    import json
+    import requests
+    import sys
+    base_url = 'https://jsonplaceholder.typicode.com/'
+    try:
+        employee_id = sys.argv[1]
+    except:
+        print('Usage: {} employee_id'.format(sys.argv[0]))
+        exit(1)
+
+    # grab the info about the user
+    url = base_url + 'users?id={}'.format(employee_id)
+    response = requests.get(url)
+    user = json.loads(response.text)
+    user_name = user[0].get('username')
+
+    # grab the info about the user's tasks
+    url = base_url + 'todos?userId={}'.format(employee_id)
+    response = requests.get(url)
+    objs = json.loads(response.text)
+    user_id_key = str(employee_id)
+    builder = {user_id_key: []}
+    for obj in objs:
+            json_data = {
+                "task": obj.get('title'),
+                "completed": obj.get('completed'),
+                "username": user_name
+            }
+            builder[user_id_key].append(json_data)
+    json_encoded_data = json.dumps(builder)
+    with open('{}.json'.format(employee_id), 'w') as myFile:
+        myFile.write(json_encoded_data)
